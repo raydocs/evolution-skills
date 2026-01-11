@@ -1,0 +1,19 @@
+{
+  "name": "evolution-skills",
+  "version": "0.1.0",
+  "description": "Self-evolving skills for Claude Code",
+  "author": {
+    "name": "raydocs"
+  },
+  "repository": "https://github.com/raydocs/evolution-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "evolution",
+    "patterns",
+    "health",
+    "claude-code"
+  ],
+  "commands": "./commands",
+  "skills": "./skills"
+}

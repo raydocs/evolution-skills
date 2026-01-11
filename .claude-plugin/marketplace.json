@@ -1,0 +1,30 @@
+{
+  "name": "raydocs",
+  "owner": {
+    "name": "raydocs"
+  },
+  "metadata": {
+    "description": "Personal marketplaces for raydocs skills",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "evolution-skills",
+      "source": "./claude-code",
+      "description": "Self-evolving skills for Claude Code",
+      "version": "0.1.0",
+      "author": {
+        "name": "raydocs"
+      },
+      "repository": "https://github.com/raydocs/evolution-skills",
+      "license": "MIT",
+      "keywords": [
+        "skills",
+        "evolution",
+        "patterns",
+        "health",
+        "claude-code"
+      ]
+    }
+  ]
+}
