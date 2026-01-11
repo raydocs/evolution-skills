@@ -69,7 +69,9 @@ description: 通用自我进化系统 - 在开发过程中自动学习并改进�
 ├── {tech}-patterns.md        # UI/组件模式
 ├── {tech}-troubleshooting.md # 错误解决
 ├── {tech}-architecture.md    # 架构模式
+├── {tech}-layout.md          # 布局/响应式
 ├── {tech}-build.md           # 构建/部署
+├── {tech}-fundamentals.md    # 核心概念/API
 └── project-styles/
     └── {project}.md          # 项目风格档案
 ```
@@ -89,6 +91,7 @@ description: 通用自我进化系统 - 在开发过程中自动学习并改进�
 | 学到架构技术 | {tech}-architecture.md | 高 |
 | 找到布局方案 | {tech}-layout.md | 中 |
 | 解决构建问题 | {tech}-build.md | 中 |
+| 理清核心概念/API | {tech}-fundamentals.md | 低 |
 
 ### 进化前的自我检查
 
@@ -101,15 +104,55 @@ description: 通用自我进化系统 - 在开发过程中自动学习并改进�
 如果都是肯定的，提议给用户:
 > "这个解决方案可能值得保存到 skills。要我添加吗？"
 
+## 目标文件映射 (tech + category)
+
+| category | 目标文件 |
+|---------|---------|
+| patterns | {tech}-patterns.md |
+| troubleshooting | {tech}-troubleshooting.md |
+| architecture | {tech}-architecture.md |
+| layout | {tech}-layout.md |
+| build | {tech}-build.md |
+| fundamentals | {tech}-fundamentals.md |
+
+## 去重与编号规则
+
+- 模式编号: 读取目标文件中已有的 `## 模式 N:`，取最大 N + 1。
+- 去重判定: 标题规范化（小写、去标点、空格折叠）相同视为同一模式；标题不同但核心步骤或代码签名一致时合并。
+- 更新策略: 优先更新原条目并补充边缘情况；需要纠正时添加 `correction` 标记，不新增重复条目。
+
 ---
 
 ## 内容格式
 
+### 统一元数据块 (所有条目通用)
+
+日期格式统一为 `YYYY-MM-DD`。新条目遵循以下规则:
+- 必须包含 `evolution`。
+- 模式条目必须包含 `feedback`；问题解决条目可选。
+- `version`/`correction` 仅在需要时添加。
+- `category` 取值: patterns / troubleshooting / architecture / layout / build / fundamentals。
+- `lifecycle` 标记生命周期状态；`scope` 标记通用性；`revision` 用于回滚链路。
+
+```markdown
+<!-- evolution: YYYY-MM-DD | source: {project} | trigger: {what-happened} | tech: {tech} | category: {category} -->
+<!-- feedback: count=0 | success=0 | failed=0 | last_used=YYYY-MM-DD -->
+<!-- version: {framework} {constraint} | runtime: {runtime} | tool: {tool} -->
+<!-- lifecycle: state=active | since=YYYY-MM-DD | reason={reason} -->
+<!-- scope: level=project | projects={projectA,projectB} -->
+<!-- revision: id={rev_id} | parent={rev_id} -->
+<!-- correction: YYYY-MM-DD | was: {old} | now: {new} | reason: {why} -->
+```
+
 ### 模式格式
 
 ```markdown
-<!-- evolution: YYYY-MM-DD | source: {project} | trigger: {what-happened} -->
+<!-- evolution: YYYY-MM-DD | source: {project} | trigger: {what-happened} | tech: {tech} | category: patterns -->
 <!-- feedback: count=0 | success=0 | failed=0 | last_used=YYYY-MM-DD -->
+<!-- version: {framework} {constraint} | runtime: {runtime} | tool: {tool} -->
+<!-- lifecycle: state=active | since=YYYY-MM-DD | reason={reason} -->
+<!-- scope: level=project | projects={projectA,projectB} -->
+<!-- revision: id={rev_id} | parent={rev_id} -->
 
 ## 模式 N: {名称}
 
@@ -135,7 +178,11 @@ description: 通用自我进化系统 - 在开发过程中自动学习并改进�
 ### 问题解决格式
 
 ```markdown
-<!-- evolution: YYYY-MM-DD | source: {project} | trigger: fixed-error -->
+<!-- evolution: YYYY-MM-DD | source: {project} | trigger: fixed-error | tech: {tech} | category: troubleshooting -->
+<!-- version: {framework} {constraint} | runtime: {runtime} | tool: {tool} -->
+<!-- lifecycle: state=active | since=YYYY-MM-DD | reason={reason} -->
+<!-- scope: level=project | projects={projectA,projectB} -->
+<!-- revision: id={rev_id} | parent={rev_id} -->
 
 ### {错误消息或类型}
 
@@ -152,6 +199,35 @@ description: 通用自我进化系统 - 在开发过程中自动学习并改进�
 ```
 
 ---
+
+## 条目生命周期
+
+状态流转: `draft -> active -> deprecated -> removed`，异常时可进入 `quarantined`。
+
+- `active` 才能默认推荐。
+- `deprecated` 仅在用户明确要求或迁移提示时使用。
+- `quarantined` 不推荐，需修复或回滚后恢复。
+- `removed` 保留墓碑并指向替代条目。
+
+元数据示例:
+```markdown
+<!-- lifecycle: state=active | since=YYYY-MM-DD | reason={reason} -->
+```
+
+## 冲突解决与合并
+
+当多个模式同时匹配时，按以下顺序选择:
+1. tech + version 精确匹配
+2. 采样窗口内成功率更高
+3. `last_used` 更近
+4. 与项目风格更一致
+
+合并记录标记:
+```markdown
+<!-- merge: YYYY-MM-DD | from={old_id} | into={new_id} | reason={why} -->
+```
+
+变体处理: 在同一条目下追加 `Variants` 小节，不新增散乱文件。
 
 ## 自我修正流程
 
@@ -179,9 +255,39 @@ description: 通用自我进化系统 - 在开发过程中自动学习并改进�
 
 ---
 
+## 自动回滚
+
+触发条件 (采样窗口内任一满足):
+- `failed >= 3`
+- 成功率 < 50%
+
+回滚行为:
+- 回退到最近 `active` 且成功率最高的 `revision`。
+- 将当前条目标记为 `quarantined`。
+- 追加回滚标记并记录原因。
+
+回滚标记:
+```markdown
+<!-- rollback: YYYY-MM-DD | from_rev={r2} | to_rev={r1} | trigger={failed>=3} | reason={why} -->
+```
+
+revision 规则: `rev_id` 使用 `YYYYMMDD-<hash>`，每次内容变更必须更新 `revision`。
+
 ## 使用反馈跟踪
 
 当使用 skills 中的模式时:
+
+### 幂等更新规则
+
+- pattern_id = 模式标题规范化结果（小写、去标点、空格折叠）。
+- 为当前会话维护 `usage_set`，键为 `{pattern_id}:{outcome}:{target}`。
+- 若键已存在，不重复计数；仅当计数发生变化时更新 `last_used`。
+- `count` 必须等于 `success + failed`；不一致时在健康报告中标记为 "数据不一致"。
+
+### 采样窗口
+
+- 默认窗口: 最近 90 天。
+- 记录窗口内 `window_count/window_success/window_failed`，无窗口数据时回退到累计值并标记 "窗口数据缺失"。
 
 ### 成功时
 - 心里记录: success += 1
@@ -206,6 +312,15 @@ description: 通用自我进化系统 - 在开发过程中自动学习并改进�
 | 70-90% | 🔶 良好 | 可选审查 |
 | 50-70% | ⚠️ 需审查 | 检查边缘情况 |
 | < 50% | ❌ 问题 | 需修复或移除 |
+
+### 健康报告计算规则 (确定性)
+
+1. 条目识别: 仅统计以 `## 模式` 开头的条目。
+2. 反馈绑定: 仅关联条目前 3 行内的 `feedback` 标记; 缺失则标记为未追踪。
+3. 窗口优先: 使用 `window_*` 统计(90 天)，缺失则回退到累计并标记 "窗口数据缺失"。
+4. 成功率: `window_count > 0` 时 `window_success / window_count`，否则为 N/A。
+5. 关注规则: 成功率 <70% 或 `window_failed >= 3` 或 `last_used` 超过 90 天或未追踪。
+6. 聚合: 技术栈优先来自 `tech` 元数据，缺失时由文件名推断。
 
 ---
 
@@ -268,7 +383,57 @@ Rust: Cargo.toml → edition, dependencies
 - **复杂度偏好**: 小组件 / 大组件
 ```
 
+## 跨会话上下文存储
+
+缓存文件: `~/.claude/skills/.evolution-context.json`
+
+```json
+{
+  "schema_version": 2,
+  "projects": {
+    "{project_id}": {
+      "root": "/abs/path",
+      "tech_versions": { "flutter": "3.19.0" },
+      "style_profile": { "naming": "camelCase", "structure": "feature-first" },
+      "deps_signature": "{hash}",
+      "updated_at": "YYYY-MM-DD",
+      "pattern_stats": {
+        "{pattern_id}": {
+          "generality_level": "project",
+          "source_projects": ["projectA", "projectB"],
+          "window_days": 90,
+          "window_count": 0,
+          "window_success": 0,
+          "window_failed": 0,
+          "window_updated_at": "YYYY-MM-DD"
+        }
+      }
+    }
+  }
+}
+```
+
+失效规则:
+- 兼容: 缺失 `pattern_stats` 时默认 `generality_level=project`，`window_days=90`。
+- 依赖文件签名变化（package.json/Cargo.toml/pubspec.yaml/Package.swift/xcodeproj）→ 重新检测版本
+- project root 变化 → 新 project_id
+- style_profile 超过 180 天未更新 → 重新扫描 2-3 个文件
+
 ---
+
+## 跨项目通用性
+
+满足任一条件才可提升到全局 skills:
+- 至少 2 个不同项目验证通过
+- 明确的框架官方行为/稳定 API
+- 有最小复现与通过步骤
+
+否则保留在 `project-styles/{project}.md` 或条目内 `Variants`。
+
+通用性标记:
+```markdown
+<!-- scope: level=project | projects={projectA,projectB} -->
+```
 
 ## 质量标准
 
