@@ -14,6 +14,13 @@ AI 编程助手的自我进化技能系统。
 
 ## English
 
+### Preface
+
+Use only the skills you actually need. MCPs consume context, and skills consume context too.
+This system exists to help you build skills that solve your real work, not to wrap generic content from the internet.
+From personal experience, attention quality drops sharply beyond ~65k tokens, and default system/tool prompts can eat ~20k.
+If this is too long, just paste this GitHub link into your AI and ask how to use it.
+
 ### What It Is
 
 Evolution Skills is a documentation-first skill system for AI coding assistants. It ships structured specs and command templates that help capture reusable patterns, track their health, and keep guidance aligned with project style and framework versions.
@@ -26,6 +33,7 @@ Packages:
 
 - Preserve hard-won solutions as reusable patterns.
 - Self-correct when suggestions fail.
+- Build an automation-friendly learning loop so guidance improves with real usage.
 - Track pattern health with deterministic rules.
 - Adapt to project style and version constraints.
 
@@ -38,6 +46,18 @@ Packages:
 | Validation | Validate skills content with `/validate-skills` | `claude-code/README.md` |
 | Version adaptation | Choose guidance based on detected versions | `claude-code/README.md`, `factory-droid/README.md` |
 | Style profiling | Align output to project conventions | `claude-code/README.md`, `factory-droid/README.md` |
+
+### Capability Checklist
+
+Core loop:
+- [x] Capture proven fixes and patterns via `/evolve`
+- [x] Normalize entries with metadata (context, constraints, versions)
+- [x] Track health signals from deterministic `feedback`
+
+Automation-friendly:
+- [x] Detect style and version constraints to guide output
+- [x] De-duplicate and update patterns when they fail
+- [x] Keep Claude and Factory guidance aligned by spec
 
 ### Quick Start
 
@@ -77,12 +97,31 @@ Then run:
 | `/skills-health` | Yes | Yes | Show health report |
 | `/validate-skills` | Yes | No | Validate skills accuracy |
 
+### Usage Guidance
+
+Recommended workflow:
+1) Solve a real issue, then run `/evolve` while context is fresh.
+2) Review `/skills-health` regularly to find drift or failing patterns.
+3) (Claude Code) Run `/validate-skills` after skill updates.
+
+Authoring principles:
+- Keep patterns small and specific (one problem, one pattern).
+- Write constraints explicitly (version, style, environment).
+- Prefer deterministic checks and clear success criteria.
+
 ### Use Cases
 
 - Capture a verified troubleshooting fix after resolving a build failure.
 - Standardize a UI pattern across multiple projects.
 - Keep guidance aligned with framework version upgrades.
 - Detect stale patterns using health signals.
+
+### Automation & Learning Loop
+
+1) Capture: validated fixes are saved via `/evolve`.
+2) Normalize: entries are deduped and tagged with metadata.
+3) Monitor: health is tracked through deterministic `feedback` rules.
+4) Improve: patterns are updated or retired as failures accumulate.
 
 ### Architecture
 
@@ -133,6 +172,13 @@ PRs welcome. Please follow the existing format and keep Claude and Factory versi
 
 ## 中文
 
+### 引言
+
+只装自己用得上的 skills。MCP 会占上下文，skills 同样会占上下文。
+这个系统是为了帮你做“真正对自己有用”的技能，而不是去网上套壳。
+个人经验：上下文超过约 65k tokens 时注意力会明显下降，系统默认提示可能占用约 20k。
+太长不想看，就把这个 GitHub 链接丢给 AI，让它告诉你怎么用。
+
 ### 这是什么
 
 Evolution Skills 是面向 AI 编程助手的文档型技能系统。它提供规范化的技能说明与命令模板，用于沉淀可复用模式、追踪健康度，并与项目风格和框架版本保持一致。
@@ -145,6 +191,7 @@ Evolution Skills 是面向 AI 编程助手的文档型技能系统。它提供�
 
 - 将解决方案沉淀为可复用模式。
 - 建议失败时自动修正。
+- 形成自动化学习闭环，使用越多越懂你的项目约束。
 - 用确定性规则跟踪模式健康度。
 - 适配项目风格与版本约束。
 
@@ -157,6 +204,18 @@ Evolution Skills 是面向 AI 编程助手的文档型技能系统。它提供�
 | 验证 | 通过 `/validate-skills` 验证内容 | `claude-code/README.md` |
 | 版本适配 | 根据检测到的版本选择指导 | `claude-code/README.md`, `factory-droid/README.md` |
 | 风格适配 | 匹配项目编码习惯 | `claude-code/README.md`, `factory-droid/README.md` |
+
+### 能力清单
+
+核心闭环:
+- [x] 用 `/evolve` 沉淀已验证的模式
+- [x] 通过元数据规范化（上下文、约束、版本）
+- [x] 基于确定性的 `feedback` 跟踪健康度
+
+自动化倾向:
+- [x] 识别风格与版本约束并据此输出
+- [x] 去重并在失败时更新或修正模式
+- [x] 保持 Claude 与 Factory 的规范一致
 
 ### 快速开始
 
@@ -196,12 +255,31 @@ cp -r factory-droid/droids/* ~/.factory/droids/   # 可选
 | `/skills-health` | 是 | 是 | 显示健康报告 |
 | `/validate-skills` | 是 | 否 | 验证 skills 准确性 |
 
+### 使用指南
+
+推荐流程:
+1) 解决真实问题后立刻运行 `/evolve`。
+2) 定期查看 `/skills-health` 识别漂移或失败模式。
+3)（Claude Code）更新技能后运行 `/validate-skills`。
+
+编写原则:
+- 颗粒度要小且明确（一个问题对应一个模式）。
+- 明确写出约束（版本、风格、环境）。
+- 使用确定性检查与清晰的成功标准。
+
 ### 使用场景
 
 - 解决构建失败后沉淀可复用修复方案。
 - 跨项目统一 UI 模式。
 - 随框架版本升级保持指导一致。
 - 通过健康信号识别过时模式。
+
+### 自动化与学习闭环
+
+1) 捕获：用 `/evolve` 保存经过验证的修复。
+2) 规范化：去重并补齐元数据。
+3) 监控：用确定性的 `feedback` 规则跟踪健康度。
+4) 改进：失败累计后更新或淘汰模式。
 
 ### 架构
 
